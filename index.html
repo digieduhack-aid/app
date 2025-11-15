@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>LLM Client-Side Prompt Runner</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Client-Side OpenAI Prompt Runner</h1>
+
+    <label for="apiKey">Your OpenAI API Key</label>
+    <input type="password" id="apiKey" placeholder="sk-..." />
+
+    <label for="promptType">Choose an action</label>
+    <select id="promptType">
+      <option value="summarize">Summarize text</option>
+      <option value="story">Rewrite as a story</option>
+      <option value="explain5">Explain like I’m 5</option>
+    </select>
+
+    <label for="inputText">Input text</label>
+    <textarea id="inputText" rows="8" placeholder="Enter text here..."></textarea>
+
+    <button id="runButton">Run</button>
+
+    <h2>Result</h2>
+    <div id="output"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
