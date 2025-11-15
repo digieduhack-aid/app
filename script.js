@@ -22,6 +22,9 @@ const generateBtn = document.getElementById('generate-btn');
 const resultsContainer = document.getElementById('results-container');
 const loadingIndicator = document.getElementById('loading-indicator');
 const loadingText = document.getElementById('loading-text');
+const promptToggleBtn = document.getElementById('prompt-toggle-btn');
+const promptChevron = document.getElementById('prompt-chevron');
+const promptDisplay = document.getElementById('prompt-display');
 const textOutput = document.getElementById('text-output');
 const audioContainer = document.getElementById('audio-container');
 const audioPlayer = document.getElementById('audio-player');
@@ -51,6 +54,11 @@ vystupGroup.addEventListener('change', checkFormValidity);
 selectApiGemini.addEventListener('change', checkFormValidity);
 selectApiOpenAI.addEventListener('change', checkFormValidity);
 generateBtn.addEventListener('click', runAiTask);
+promptToggleBtn.addEventListener('click', () => {
+    promptDisplay.classList.toggle('hidden');
+    promptChevron.classList.toggle('rotate-180');
+    promptToggleBtn.classList.toggle('rounded-b-none');
+});
 
 // --- Form Logic ---
 function checkFormValidity() {
@@ -184,6 +192,7 @@ async function runAiTask() {
     // Reset UI
     setLoading(true);
     textOutput.textContent = "";
+    promptDisplay.textContent = "";
     audioContainer.classList.add('hidden');
     if (currentAudioUrl) {
         URL.revokeObjectURL(currentAudioUrl); // Clean up old audio blob
@@ -193,40 +202,25 @@ async function runAiTask() {
     // Create a dynamic user prompt based on selections
     const systemPrompt = buildPrompt(rocnik, skupina, vystup);
     const promptData = { system: systemPrompt, user: "Please process the attached file according to the system instructions." };
+    
+    // Display the generated prompt for debugging
+    promptDisplay.textContent = systemPrompt;
 
     const base64Data = fileDataUrl.split(',')[1];
 
     try {
-        if (selectedTask === 'read_aloud') {
-            if (!fileTextContent) {
-                throw new Error("Please upload a text file (.txt, .md, etc.) for the 'Read Aloud' task.");
-            }
-            loadingText.textContent = "Generating audio...";
-            const audioBlob = await fetchTTS(selectedApi, apiKey, fileTextContent);
-            const audioUrl = URL.createObjectURL(audioBlob);
-            currentAudioUrl = audioUrl;
-            audioPlayer.src = audioUrl;
-            audioContainer.classList.remove('hidden');
-            textOutput.textContent = "Audio generated successfully.";
-        } else {
-            // OCR or Summarize
-            loadingText.textContent = "Analyzing file...";
-            // Check for non-image/text mimetypes that vision models might reject
-            let effectiveMimeType = fileMimeType;
-            if (fileMimeType === 'application/pdf') {
-                // Vision models often prefer this specific type for PDFs
-                effectiveMimeType = 'application/pdf';
-            } else if (!fileMimeType.startsWith('image/')) {
-                // Fallback for things like docx, etc. Let's try to treat it as a generic blob if not an image.
-                // For this demo, we'll focus on images and PDFs as primary vision inputs.
-                // A more complex app would convert DOCX/PDF to images first.
-                // We will rely on the API to handle common types like PNG, JPEG, WEBP, PDF.
-                console.warn(`Unsupported MIME type for vision: ${fileMimeType}. Proceeding, but API may fail.`);
-            }
-
-            const resultText = await fetchVision(selectedApi, apiKey, promptData, base64Data, effectiveMimeType);
-            textOutput.textContent = resultText;
+        // All tasks now use the vision model
+        loadingText.textContent = "Analyzing file...";
+        
+        // We will rely on the API to handle common types like PNG, JPEG, WEBP, PDF.
+        // For other types, the API might fail, which is handled by the catch block.
+        if (!fileMimeType.startsWith('image/') && !fileMimeType.startsWith('text/') && fileMimeType !== 'application/pdf') {
+             console.warn(`Unsupported MIME type for vision: ${fileMimeType}. Proceeding, but API may fail.`);
         }
+
+        const resultText = await fetchVision(selectedApi, apiKey, promptData, base64Data, fileMimeType);
+        textOutput.textContent = resultText;
+
     } catch (error) {
         console.error("Task failed:", error);
         showError(error.message);
@@ -298,7 +292,12 @@ async function fetchVision(api, key, promptData, base64Data, mimeType) {
     const result = await response.json();
 
     if (api === 'gemini') {
-        return result.candidates[0]?.content?.parts[0]?.text || "No content returned.";
+        // More robust check for Gemini's response structure
+        if (result.candidates && result.candidates[0] && result.candidates[0].content && result.candidates[0].content.parts) {
+            return result.candidates[0].content.parts[0].text;
+        }
+        // Handle cases where the response is blocked or empty
+        return "No content returned from API. This might be due to safety settings or an empty response.";
     } else { // openai
         return result.choices[0]?.message?.content || "No content returned.";
     }
@@ -407,12 +406,12 @@ function setLoading(isLoading) {
         loadingIndicator.classList.remove('hidden');
         loadingIndicator.classList.add('flex');
         generateBtn.disabled = true;
-        generateBtn.textContent = "Processing...";
+        generateBtn.textContent = "Spracúvam...";
     } else {
         loadingIndicator.classList.add('hidden');
         loadingIndicator.classList.remove('flex');
         generateBtn.disabled = false;
-        generateBtn.textContent = "Run Task";
+        generateBtn.textContent = "Odošli";
         checkFormValidity(); // Re-check validity (e.g., file might still be selected)
     }
 }

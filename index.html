@@ -135,7 +135,7 @@
             <!-- Upload Progress -->
             <div id="progress-container" class="hidden">
                 <div class="flex justify-between mb-1">
-                    <span class="text-base font-medium text-blue-700">Loading file...</span>
+                    <span class="text-base font-medium text-blue-700">Nahrávam súbor...</span>
                     <span class="text-sm font-medium text-blue-700" id="progress-percent">0%</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2.5">
@@ -154,7 +154,21 @@
 
         <!-- Results Container -->
         <div id="results-container" class="mt-10 hidden">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Results:</h2>
+            <!-- Collapsible Prompt Display -->
+            <div class="mb-8">
+                <button id="prompt-toggle-btn" class="w-full flex justify-between items-center text-left p-4 bg-gray-100 hover:bg-gray-200 rounded-lg focus:outline-none transition-all">
+                    <h2 class="text-2xl font-semibold text-gray-800">Prompt</h2>
+                    <svg id="prompt-chevron" class="w-6 h-6 text-gray-600 transform transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div id="prompt-display"
+                     class="hidden w-full p-4 bg-yellow-50 rounded-b-lg border-x border-b border-yellow-200 text-gray-700 whitespace-pre-wrap min-h-[100px] font-mono text-sm">
+                </div>
+            </div>
+
+            <!-- AI Output -->
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Výsledky:</h2>
             <!-- Loading Indicator -->
             <div id="loading-indicator" class="hidden items-center space-x-2 text-gray-600">
                 <svg class="animate-pulse h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg"
@@ -162,7 +176,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M12 8v4l3 3m6-3-3-3-3 3" />
                 </svg>
-                <span id="loading-text">Processing your request...</span>
+                <span id="loading-text">Spracúvam...</span>
             </div>
 
             <!-- Text Output -->
