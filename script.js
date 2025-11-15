@@ -6,10 +6,14 @@ import { GEMINI_API_KEY, OPENAI_API_KEY } from './api-keys.js';
 // --- DOM Elements ---
 const selectApiGemini = document.getElementById('api-select-gemini');
 const selectApiOpenAI = document.getElementById('api-select-openai');
-const selectMenu = document.getElementById('select-menu');
+const selectRocnik = document.getElementById('select-rocnik');
+const selectSkupina = document.getElementById('select-skupina');
+const selectVystup = document.getElementById('select-vystup');
 const fileInput = document.getElementById('file-input');
 const fileUploadText = document.getElementById('file-upload-text');
 const fileUploadSubtext = document.getElementById('file-upload-subtext');
+const fileUploadPlaceholder = document.getElementById('file-upload-placeholder');
+const fileThumbnail = document.getElementById('file-thumbnail');
 const progressContainer = document.getElementById('progress-container');
 const progressBar = document.getElementById('progress-bar');
 const progressPercent = document.getElementById('progress-percent');
@@ -31,34 +35,32 @@ let currentAudioUrl = null; // To manage audio blob URLs
 
 // --- Prompt Definitions ---
 const prompts = {
-    ocr: {
-        system: "You are an Optical Character Recognition (OCR) specialist. Extract all text from the provided image, exactly as it appears. Do not add any commentary or formatting.",
-        user: "Extract the text from this image."
-    },
-    summarize: {
-        system: "You are a professional summarization assistant. Provide a concise, clear, and high-level summary of the provided content (image or text).",
-        user: "Summarize the content of this file."
-    },
-    read_aloud: {
-        system: "You will be given text. Read it aloud clearly and naturally.",
-        user: "Read this text." // The user prompt isn't really used for TTS, the file content is.
+    // Boilerplate prompt for the new task structure
+    generate_material: {
+        system: "You are an educational assistant creating materials for students based on provided text.",
+        user: "Generate the specified output for the student group from the provided content."
     }
 };
 
 // --- Event Listeners ---
 fileInput.addEventListener('change', handleFileInput);
-selectMenu.addEventListener('change', checkFormValidity);
+selectRocnik.addEventListener('change', checkFormValidity);
+selectSkupina.addEventListener('change', checkFormValidity);
+selectVystup.addEventListener('change', checkFormValidity);
 selectApiGemini.addEventListener('change', checkFormValidity);
 selectApiOpenAI.addEventListener('change', checkFormValidity);
 generateBtn.addEventListener('click', runAiTask);
 
 // --- Form Logic ---
 function checkFormValidity() {
-    const task = selectMenu.value;
+    const rocnik = selectRocnik.value;
+    const skupina = selectSkupina.value;
+    const vystup = selectVystup.value;
     const fileSelected = !!fileDataUrl;
     
     // Re-enable button. No longer checking for API key input.
-    generateBtn.disabled = !(task !== 'default' && fileSelected);
+    const allSelectionsMade = rocnik !== 'default' && skupina !== 'default' && vystup !== 'default';
+    generateBtn.disabled = !(allSelectionsMade && fileSelected);
 }
 
 function handleFileInput(event) {
@@ -69,6 +71,8 @@ function handleFileInput(event) {
         fileTextContent = null;
         fileUploadText.textContent = "Click to upload a file";
         fileUploadSubtext.textContent = "Images, TXT, PDF, etc.";
+        fileThumbnail.classList.add('hidden');
+        fileUploadPlaceholder.classList.remove('hidden');
         progressContainer.classList.add('hidden');
         checkFormValidity();
         return;
@@ -116,6 +120,18 @@ function handleFileInput(event) {
         } else {
             fileTextContent = null;
         }
+
+        // Show thumbnail if it's an image
+        if (fileMimeType.startsWith('image/')) {
+            fileThumbnail.src = fileDataUrl;
+            fileThumbnail.classList.remove('hidden');
+            fileUploadPlaceholder.classList.add('hidden');
+        } else {
+            // Ensure thumbnail is hidden for non-image files
+            fileThumbnail.classList.add('hidden');
+            fileUploadPlaceholder.classList.remove('hidden');
+        }
+
         progressBar.style.width = '100%';
         progressPercent.textContent = '100%';
         checkFormValidity();
@@ -125,6 +141,8 @@ function handleFileInput(event) {
         showError("Error reading file.");
         fileDataUrl = null;
         progressContainer.classList.add('hidden');
+        fileThumbnail.classList.add('hidden');
+        fileUploadPlaceholder.classList.remove('hidden');
         checkFormValidity();
     };
     
@@ -135,7 +153,10 @@ function handleFileInput(event) {
 // --- Main Task Orchestrator ---
 async function runAiTask() {
     const selectedApi = document.querySelector('input[name="api-provider"]:checked').value;
-    const selectedTask = selectMenu.value;
+    const rocnik = selectRocnik.value;
+    const skupina = selectSkupina.value;
+    const vystup = selectVystup.value;
+    const selectedTask = 'generate_material'; // Hardcoded as we now have a single, configurable task
 
     // Get the correct key from the imported constants
     const apiKey = (selectedApi === 'gemini') ? GEMINI_API_KEY : OPENAI_API_KEY;
@@ -149,7 +170,7 @@ async function runAiTask() {
     }
 
     // Updated check
-    if (!selectedApi || !selectedTask || !fileDataUrl) {
+    if (!selectedApi || rocnik === 'default' || skupina === 'default' || vystup === 'default' || !fileDataUrl) {
         showError("Please select an API, a task, and upload a file.");
         return;
     }
@@ -163,7 +184,10 @@ async function runAiTask() {
         currentAudioUrl = null;
     }
 
-    const promptData = prompts[selectedTask];
+    // Create a dynamic user prompt based on selections
+    const dynamicPrompt = `Ročník: ${rocnik}, Skupina žiakov: ${skupina}, Typ výstupu: ${vystup}. Please process the attached file.`;
+    const promptData = { ...prompts[selectedTask], user: dynamicPrompt };
+
     const base64Data = fileDataUrl.split(',')[1];
 
     try {
