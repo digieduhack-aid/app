@@ -12,3 +12,9 @@ body {
 #message-box {
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
+
+/* Custom style for checkbox labels */
+label:has(input[type="checkbox"]:checked) {
+    border-color: #3b82f6; /* blue-500 */
+    background-color: #eff6ff; /* blue-50 */
+}

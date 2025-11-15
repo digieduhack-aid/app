@@ -2,13 +2,14 @@
 // Keys are imported from the api-keys.js file.
 // Make sure that file exists and has your keys.
 import { GEMINI_API_KEY, OPENAI_API_KEY } from './api-keys.js';
+import { buildPrompt } from './prompt-builder.js';
 
 // --- DOM Elements ---
 const selectApiGemini = document.getElementById('api-select-gemini');
 const selectApiOpenAI = document.getElementById('api-select-openai');
-const selectRocnik = document.getElementById('select-rocnik');
-const selectSkupina = document.getElementById('select-skupina');
-const selectVystup = document.getElementById('select-vystup');
+const rocnikGroup = document.getElementById('rocnik-checkbox-group');
+const skupinaGroup = document.getElementById('skupina-checkbox-group');
+const vystupGroup = document.getElementById('vystup-checkbox-group');
 const fileInput = document.getElementById('file-input');
 const fileUploadText = document.getElementById('file-upload-text');
 const fileUploadSubtext = document.getElementById('file-upload-subtext');
@@ -44,22 +45,22 @@ const prompts = {
 
 // --- Event Listeners ---
 fileInput.addEventListener('change', handleFileInput);
-selectRocnik.addEventListener('change', checkFormValidity);
-selectSkupina.addEventListener('change', checkFormValidity);
-selectVystup.addEventListener('change', checkFormValidity);
+rocnikGroup.addEventListener('change', checkFormValidity);
+skupinaGroup.addEventListener('change', checkFormValidity);
+vystupGroup.addEventListener('change', checkFormValidity);
 selectApiGemini.addEventListener('change', checkFormValidity);
 selectApiOpenAI.addEventListener('change', checkFormValidity);
 generateBtn.addEventListener('click', runAiTask);
 
 // --- Form Logic ---
 function checkFormValidity() {
-    const rocnik = selectRocnik.value;
-    const skupina = selectSkupina.value;
-    const vystup = selectVystup.value;
+    const rocnikSelected = document.querySelectorAll('input[name="rocnik"]:checked').length > 0;
+    const skupinaSelected = document.querySelectorAll('input[name="skupina"]:checked').length > 0;
+    const vystupSelected = document.querySelectorAll('input[name="vystup"]:checked').length > 0;
     const fileSelected = !!fileDataUrl;
     
     // Re-enable button. No longer checking for API key input.
-    const allSelectionsMade = rocnik !== 'default' && skupina !== 'default' && vystup !== 'default';
+    const allSelectionsMade = rocnikSelected && skupinaSelected && vystupSelected;
     generateBtn.disabled = !(allSelectionsMade && fileSelected);
 }
 
@@ -153,10 +154,15 @@ function handleFileInput(event) {
 // --- Main Task Orchestrator ---
 async function runAiTask() {
     const selectedApi = document.querySelector('input[name="api-provider"]:checked').value;
-    const rocnik = selectRocnik.value;
-    const skupina = selectSkupina.value;
-    const vystup = selectVystup.value;
     const selectedTask = 'generate_material'; // Hardcoded as we now have a single, configurable task
+
+    // Helper function to get checked values from a group
+    const getCheckedValues = (name) => 
+        Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(cb => cb.value);
+
+    const rocnik = getCheckedValues('rocnik');
+    const skupina = getCheckedValues('skupina');
+    const vystup = getCheckedValues('vystup');
 
     // Get the correct key from the imported constants
     const apiKey = (selectedApi === 'gemini') ? GEMINI_API_KEY : OPENAI_API_KEY;
@@ -170,7 +176,7 @@ async function runAiTask() {
     }
 
     // Updated check
-    if (!selectedApi || rocnik === 'default' || skupina === 'default' || vystup === 'default' || !fileDataUrl) {
+    if (!selectedApi || rocnik.length === 0 || skupina.length === 0 || vystup.length === 0 || !fileDataUrl) {
         showError("Please select an API, a task, and upload a file.");
         return;
     }
@@ -185,8 +191,8 @@ async function runAiTask() {
     }
 
     // Create a dynamic user prompt based on selections
-    const dynamicPrompt = `Ročník: ${rocnik}, Skupina žiakov: ${skupina}, Typ výstupu: ${vystup}. Please process the attached file.`;
-    const promptData = { ...prompts[selectedTask], user: dynamicPrompt };
+    const systemPrompt = buildPrompt(rocnik, skupina, vystup);
+    const promptData = { system: systemPrompt, user: "Please process the attached file according to the system instructions." };
 
     const base64Data = fileDataUrl.split(',')[1];
 

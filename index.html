@@ -32,7 +32,7 @@
 <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
 
     <!-- Main Application Card -->
-    <div class="bg-white p-6 sm:p-10 rounded-2xl shadow-xl w-full max-w-2xl">
+    <div class="bg-white p-6 sm:p-10 rounded-2xl shadow-xl w-full">
         <h1 class="text-center mb-8">
             <img src="logo.jpeg" alt="AiD Logo" class="mx-auto h-16 w-auto">
         </h1>
@@ -61,55 +61,53 @@
             </div>
 
             <!-- Task Selection -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                    <label for="select-rocnik" class="block text-lg font-medium text-gray-700 mb-2">Ročník:</label>
-                    <select id="select-rocnik" class="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-700 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="default" disabled selected>-- Vyberte --</option>
-                        <option value="1">1. ročník</option>
-                        <option value="2">2. ročník</option>
-                        <option value="3">3. ročník</option>
-                        <option value="4">4. ročník</option>
-                        <option value="5">5. ročník</option>
-                        <option value="6">6. ročník</option>
-                        <option value="7">7. ročník</option>
-                        <option value="8">8. ročník</option>
-                        <option value="9">9. ročník</option>
-                    </select>
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+                <div class="md:col-span-1">
+                    <label class="block text-lg font-medium text-gray-700 mb-2">Ročník:</label>
+                    <div id="rocnik-checkbox-group" class="space-y-2">
+                        <!-- Checkboxes will be dynamically styled -->
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="rocnik" value="1" class="h-4 w-4 rounded mr-3">1. ročník</label>
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="rocnik" value="2" class="h-4 w-4 rounded mr-3">2. ročník</label>
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="rocnik" value="3" class="h-4 w-4 rounded mr-3">3. ročník</label>
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="rocnik" value="4" class="h-4 w-4 rounded mr-3">4. ročník</label>
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="rocnik" value="5" class="h-4 w-4 rounded mr-3">5. ročník</label>
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="rocnik" value="6" class="h-4 w-4 rounded mr-3">6. ročník</label>
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="rocnik" value="7" class="h-4 w-4 rounded mr-3">7. ročník</label>
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="rocnik" value="8" class="h-4 w-4 rounded mr-3">8. ročník</label>
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="rocnik" value="9" class="h-4 w-4 rounded mr-3">9. ročník</label>
+                    </div>
                 </div>
-                <div>
-                    <label for="select-skupina" class="block text-lg font-medium text-gray-700 mb-2">Skupiny na diferenciáciu:</label>
-                    <select id="select-skupina" class="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-700 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="default" disabled selected>-- Vyberte --</option>
-                        <option value="Intaktný žiak - pokojné tempo">Intaktný žiak - pokojné tempo</option>
-                        <option value="Intaktný žiak - rýchlejšie tempo">Intaktný žiak - rýchlejšie tempo</option>
-                        <option value="Intaktný žiak - najrýchlejšie tempo">Intaktný žiak - najrýchlejšie tempo</option>
-                        <option value="Žiak z Ukrajiny">Žiak z Ukrajiny</option>
-                        <option value="Žiak s ADHD">Žiak s ADHD</option>
-                        <option value="Žiak s nadaním">Žiak s nadaním</option>
-                        <option value="Žiak s PAS">Žiak s PAS</option>
-                        <option value="Žiak s dyslexiou">Žiak s dyslexiou</option>
-                    </select>
+                <div class="md:col-span-2">
+                    <label class="block text-lg font-medium text-gray-700 mb-2">Skupiny na diferenciáciu:</label>
+                    <div id="skupina-checkbox-group" class="space-y-2">
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="skupina" value="Intaktný žiak - pokojné tempo" class="h-4 w-4 rounded mr-3">Intaktný žiak - pokojné tempo</label>
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="skupina" value="Intaktný žiak - rýchlejšie tempo" class="h-4 w-4 rounded mr-3">Intaktný žiak - rýchlejšie tempo</label>
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="skupina" value="Intaktný žiak - najrýchlejšie tempo" class="h-4 w-4 rounded mr-3">Intaktný žiak - najrýchlejšie tempo</label>
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="skupina" value="Žiak z Ukrajiny" class="h-4 w-4 rounded mr-3">Žiak z Ukrajiny</label>
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="skupina" value="Žiak s ADHD" class="h-4 w-4 rounded mr-3">Žiak s ADHD</label>
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="skupina" value="Žiak s nadaním" class="h-4 w-4 rounded mr-3">Žiak s nadaním</label>
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="skupina" value="Žiak s PAS" class="h-4 w-4 rounded mr-3">Žiak s PAS</label>
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="skupina" value="Žiak s dyslexiou" class="h-4 w-4 rounded mr-3">Žiak s dyslexiou</label>
+                    </div>
                 </div>
-                <div>
-                    <label for="select-vystup" class="block text-lg font-medium text-gray-700 mb-2">Typ výstupu:</label>
-                    <select id="select-vystup" class="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-700 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="default" disabled selected>-- Vyberte --</option>
-                        <option value="Kvíz">Kvíz</option>
-                        <option value="Príprava na vyučovanie">Príprava na vyučovanie</option>
-                        <option value="Pracovný list">Pracovný list</option>
-                        <option value="Hra">Hra</option>
-                        <option value="Projektové vyučovanie">Projektové vyučovanie</option>
-                        <option value="Test">Test</option>
-                        <option value="Predikčná karta">Predikčná karta</option>
-                    </select>
+                <div class="md:col-span-2">
+                    <label class="block text-lg font-medium text-gray-700 mb-2">Typ výstupu:</label>
+                    <div id="vystup-checkbox-group" class="space-y-2">
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="vystup" value="Kvíz" class="h-4 w-4 rounded mr-3">Kvíz</label>
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="vystup" value="Príprava na vyučovanie" class="h-4 w-4 rounded mr-3">Príprava na vyučovanie</label>
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="vystup" value="Pracovný list" class="h-4 w-4 rounded mr-3">Pracovný list</label>
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="vystup" value="Hra" class="h-4 w-4 rounded mr-3">Hra</label>
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="vystup" value="Projektové vyučovanie" class="h-4 w-4 rounded mr-3">Projektové vyučovanie</label>
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="vystup" value="Test" class="h-4 w-4 rounded mr-3">Test</label>
+                        <label class="flex items-center p-3 w-full border rounded-lg cursor-pointer"><input type="checkbox" name="vystup" value="Predikčná karta" class="h-4 w-4 rounded mr-3">Predikčná karta</label>
+                    </div>
                 </div>
             </div>
 
             <!-- File Upload -->
             <div>
                 <label for="file-input" class="block text-lg font-medium text-gray-700 mb-2">
-                    Upload File:
+                    Nahraj súbor:
                 </label>
                 <label for="file-input"
                        class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
